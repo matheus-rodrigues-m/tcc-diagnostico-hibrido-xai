@@ -1,0 +1,49 @@
+# ===== Ambiente =====
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# ===== Credenciais (NUNCA versionar) =====
+kaggle*.txt
+kaggle.json
+access_token
+.env
+*.pem
+*.key
+
+# ===== Dados (grandes / regeneráveis pelos scripts) =====
+data/**
+!data/**/
+!data/**/.gitkeep
+# manifests de split são pequenos e documentam o experimento -> versionados
+!data/interim/splits/*.csv
+
+# ===== Modelos treinados (pesados) — versiona-se apenas manifest e model cards =====
+models/**/*.pt
+models/**/*.pth
+models/**/*.joblib
+models/**/*.cbm
+models/**/*.onnx
+catboost_info/
+
+# ===== Literatura (PDFs de terceiros, ~150 MB, direitos autorais) =====
+explore/
+
+# ===== Saídas temporárias =====
+*.log
+optuna*.db
+lightning_logs/
+runs/
+
+# ===== SO / IDE =====
+Thumbs.db
+.DS_Store
+desktop.ini
+.vscode/
+.idea/
