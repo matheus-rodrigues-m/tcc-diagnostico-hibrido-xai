@@ -27,8 +27,8 @@ Discente: Matheus Rodrigues Silva Maia · Orientador: Prof. Matheus Wanderley Ro
 
 ### Fase 0 — Ambiente, ingestão e integridade
 - [x] 0.1 Ambiente: uv + Python 3.12 + `pyproject.toml` + PyTorch CUDA (teste: `python scripts/check_env.py`) ✅
-- [ ] 0.2 Estrutura de pastas, `git init`, `.gitignore`, `src/tcc_diag/{paths,seed}.py` (teste: `pytest tests/test_paths.py`) — 🟨 implementado e testado (16/16), aguardando gate
-- [ ] 0.3 Ingestão Cleveland + sha256 (teste: 303×14; `?` só em ca(4)/thal(2); 164/139)
+- [x] 0.2 Estrutura de pastas, `git init`, `.gitignore`, `src/tcc_diag/{paths,seed}.py` (teste: `pytest tests/test_paths.py`) ✅
+- [ ] 0.3 Ingestão Cleveland + sha256 (teste: `python scripts/ingest_heart.py` + `pytest tests/test_data_heart.py`) — 🟨 implementado e testado (15/15), aguardando gate
 - [ ] 0.4 Download Kermany + integridade (5216/16/624; imagens abrem; ID de paciente; duplicatas pHash treino↔teste)
 - [ ] 0.5 Download RSNA + integridade (26.684 DICOMs; labels coerentes; metadados)
 - [ ] 0.6 Benchmark GPU (img/s e batch máx. por arquitetura) → decisão local × Kaggle
@@ -147,6 +147,7 @@ Discente: Matheus Rodrigues Silva Maia · Orientador: Prof. Matheus Wanderley Ro
 |---|---|---|
 | Plano mestre | 2026-11-09 | Aprovado pelo discente |
 | 0.1 Ambiente | 2026-11-10 | 28 libs OK; RTX 3050 4 GB; teste AMP OK |
+| 0.2 Estrutura/git | 2026-11-10 | 16 testes OK; repo GitHub criado (branch main) |
 
 ## Pendências do discente
 - [x] Gerar token da API do Kaggle (necessário na etapa 0.4) — em `~/.kaggle/access_token`, testado

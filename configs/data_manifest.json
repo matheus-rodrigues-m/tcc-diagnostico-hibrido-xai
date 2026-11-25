@@ -1,0 +1,34 @@
+{
+  "uci_heart_disease": {
+    "source": "UCI ML Repository — Heart Disease (id 45); cópia local em explore/",
+    "url": "https://archive.ics.uci.edu/dataset/45/heart+disease",
+    "local_dir": "data/raw/heart_disease",
+    "ingested_at": "2026-11-25T23:15:06+00:00",
+    "files": {
+      "processed.cleveland.data": {
+        "sha256": "a74b7efa387bc9d108d7d0115d831fe9b414b29ae7124f331b622b4efa0427c8",
+        "bytes": 18461
+      },
+      "processed.hungarian.data": {
+        "sha256": "d1ad108f785768cd3d7e82dc522e6f5a61eea93cccfb3a46ee8076f73fc3d796",
+        "bytes": 10263
+      },
+      "processed.switzerland.data": {
+        "sha256": "834a405ccf5b66ab4056bb77794adc8df0b7125186454c0a1d002d33c6c3b314",
+        "bytes": 4109
+      },
+      "processed.va.data": {
+        "sha256": "e7c93d8d0d2acdadfa4c5e8de768e2191e7f618b952e29623f1f0d5949ff6b8f",
+        "bytes": 6737
+      },
+      "heart-disease.names": {
+        "sha256": "ec7ed5aa4ed8321097808f47b836301c2a0c36f3bb09c40b8b43b622363e6b61",
+        "bytes": 10060
+      },
+      "WARNING": {
+        "sha256": "01ae7cb6ab43a387b206f7127ce81869639d9d3076d447c12d7df17ad583f954",
+        "bytes": 407
+      }
+    }
+  }
+}
