@@ -187,6 +187,25 @@ Não há dataset com raio-X e dados clínicos do mesmo paciente. A ferramenta é
   - Mitigação possível (trabalho futuro): mapear as imagens para o NIH ChestX-ray14, que tem `Patient ID`, por correspondência de pixels. O custo é alto (~42 GB).
 - **0 duplicatas exatas de arquivo.**
 
+### 2.6 Custo computacional e engenharia de treino (Etapa 0.6)
+- **Condições da medição:** RTX 3050 Laptop (4 GB), entrada sintética 224×224, AMP fp16, modo determinístico, fine-tuning completo com AdamW. Resultados em `reports/metrics/gpu_benchmark.json`.
+
+  | Arquitetura | Parâm. | Batch máx. (treino) | Treino b=32 | VRAM b=32 | Inferência b=64 |
+  |---|---|---|---|---|---|
+  | ResNet-50 | 23,5 M | 64 | 193 img/s | 1,73 GB | 605 img/s (1,7 ms/img) |
+  | DenseNet-121 | 7,0 M | 48 | 176 img/s | 2,16 GB | 555 img/s (1,8 ms/img) |
+  | EfficientNet-B0 | 4,0 M | 64 | 322 img/s | 1,47 GB | 1.292 img/s (0,8 ms/img) |
+
+- **Batch de trabalho = 32 para as três redes:**
+  - Comparação justa, porque o mesmo batch dá a mesma dinâmica de otimização.
+  - Pico ≤ 2,2 GB, deixando folga para Grad-CAM e eventuais imagens maiores.
+- **Observação para a discussão:** a DenseNet-121 tem **menos parâmetros** que a ResNet-50 (7,0 × 23,5 M), mas usa **mais VRAM** e é **mais lenta**, porque concatena os mapas de ativação de todas as camadas anteriores (Huang 2017). Parâmetros ≠ custo de memória.
+- **Custo do protocolo:** ≤ ~4 h de GPU no total (limite superior com 30 épocas por execução; o early stopping reduz). Viável em hardware de consumo. **Decisão: treino local**, com o Kaggle só como reserva.
+- **Achados de engenharia** (valem uma subseção curta ou nota de reprodutibilidade):
+  1. **`channels_last` + BatchNorm em modo de treino é ~9× mais lento** nesta GPU/versão (PyTorch 2.11 + cuDNN 9.19): ResNet-50 com 23 × 203 img/s. A inferência não é afetada (691 × 587 img/s). É uma "otimização" recomendada que piorou o desempenho; só foi detectada porque medimos.
+  2. **Sysmem Fallback no Windows:** ao esgotar a VRAM, o driver NVIDIA usa a RAM do sistema em vez de lançar OOM. O treino fica ~200× mais lento, sem erro (ResNet-50, batch 64: 1 img/s). Mitigação: `torch.cuda.set_per_process_memory_fraction(0.95)` mais um detector de lentidão.
+  3. O modo determinístico do cuDNN **não** teve custo mensurável aqui (22,5 img/s em todos os modos, no cenário com o bug). Reproduzibilidade sem penalidade de desempenho.
+
 ---
 
 ## 3. Ameaças à validade (lista corrente)
@@ -259,3 +278,4 @@ Não há dataset com raio-X e dados clínicos do mesmo paciente. A ferramenta é
 | 0.3 | 2026-11-25 | Cleveland verificado contra a documentação oficial (§2.3) |
 | 0.4 | 2026-11-25 | Kermany: cópia duplicada no .zip, IDs de paciente, duplicatas, atalho RGB (§2.4; T6–T10) |
 | 0.5 | 2026-11-26 | RSNA: rótulos coerentes, confundidor AP/PA, sem ID de paciente real (§2.5; T11–T14) |
+| 0.6 | 2026-11-26 | Benchmark de GPU; batch 32; ≤4 h de protocolo; bugs channels_last e Sysmem Fallback (§2.6) |

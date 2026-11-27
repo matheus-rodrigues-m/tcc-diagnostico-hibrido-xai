@@ -1,0 +1,96 @@
+{
+  "date": "2026-11-27T02:36:34+00:00",
+  "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+  "vram_GB": 4.0,
+  "torch": "2.11.0+cu128",
+  "cuda": "12.8",
+  "python": "3.12.16",
+  "settings": {
+    "img_size": 224,
+    "vram_fraction_cap": 0.95,
+    "amp": "fp16",
+    "channels_last": false,
+    "deterministic": true,
+    "optimizer": "AdamW",
+    "full_finetune": true,
+    "synthetic_input": true
+  },
+  "results": {
+    "resnet50": {
+      "params_M": 23.51,
+      "max_train_batch": 64,
+      "vram_by_batch_GB": {
+        "8": 0.74,
+        "16": 1.06,
+        "32": 1.73,
+        "48": 2.43,
+        "64": 3.06,
+        "96": "OOM"
+      },
+      "work_batch": 32,
+      "train_img_s": 197.2,
+      "train_peak_vram_GB": 1.73,
+      "infer_img_s": 620.3,
+      "epoch_seconds_est": 23.8
+    },
+    "densenet121": {
+      "params_M": 6.96,
+      "max_train_batch": 48,
+      "vram_by_batch_GB": {
+        "8": 0.66,
+        "16": 1.17,
+        "32": 2.16,
+        "48": 3.16,
+        "64": "OOM"
+      },
+      "work_batch": 32,
+      "train_img_s": 178.5,
+      "train_peak_vram_GB": 2.16,
+      "infer_img_s": 570.2,
+      "epoch_seconds_est": 26.3
+    },
+    "efficientnet_b0": {
+      "params_M": 4.01,
+      "max_train_batch": 64,
+      "vram_by_batch_GB": {
+        "8": 0.47,
+        "16": 0.8,
+        "32": 1.47,
+        "48": 2.15,
+        "64": 2.83,
+        "96": "OOM"
+      },
+      "work_batch": 32,
+      "train_img_s": 324.5,
+      "train_peak_vram_GB": 1.47,
+      "infer_img_s": 1323.8,
+      "epoch_seconds_est": 14.3
+    }
+  },
+  "protocol_estimate": {
+    "epochs_cap": 30,
+    "runs": {
+      "ablacao_effnet_b0": {
+        "arch": "efficientnet_b0",
+        "runs": 20,
+        "hours_upper_bound": 2.38
+      },
+      "principal_resnet50": {
+        "arch": "resnet50",
+        "runs": 3,
+        "hours_upper_bound": 0.59
+      },
+      "principal_densenet121": {
+        "arch": "densenet121",
+        "runs": 3,
+        "hours_upper_bound": 0.66
+      },
+      "principal_effnet_b0": {
+        "arch": "efficientnet_b0",
+        "runs": 3,
+        "hours_upper_bound": 0.36
+      }
+    },
+    "total_hours_upper_bound": 4.0
+  }
+}
