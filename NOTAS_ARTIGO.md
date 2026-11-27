@@ -144,6 +144,49 @@ Não há dataset com raio-X e dados clínicos do mesmo paciente. A ferramenta é
   - **Conclusão:** numeração independente por pasta é a explicação mais provável. Declarar como ameaça (T7), com a evidência.
 - **Potencial atalho (*shortcut*):** **todas as 283 imagens RGB estão em treino/PNEUMONIA**. Sem conversão para tons de cinza, o modelo poderia aprender "cor ⇒ pneumonia". Mitigação: conversão obrigatória para cinza (Fase 4) e teste automatizado. Bom exemplo para a discussão sobre *shortcut learning* (Molnar; husky × lobo de Ribeiro 2016).
 
+### 2.5 Dados: RSNA Pneumonia Detection Challenge (Etapa 0.5)
+- **Fonte:** competição Kaggle `rsna-pneumonia-detection-challenge` (stage 2), .zip de 3,93 GB. Anotações de Shih et al. (2019) sobre um subconjunto do NIH ChestX-ray14. Hashes em `configs/data_manifest.json`.
+- **Uso:** só as **26.684 imagens de treino rotuladas**. As 3.000 de teste da competição não têm rótulo.
+- **Rótulos (por imagem):**
+
+  | Classe | Imagens | % |
+  |---|---|---|
+  | Lung Opacity (`Target` = 1) | 6.012 | 22,5% |
+  | No Lung Opacity / Not Normal | 11.821 | 44,3% |
+  | Normal | 8.851 | 33,2% |
+
+  - Coerência total entre os dois CSVs: `Target` = 1 ⇔ Lung Opacity ⇔ ao menos uma caixa. Zero conflitos.
+  - "Not Normal" = outras alterações sem opacidade suspeita de pneumonia (Shih p2–3). **Decisão de mapeamento para a tarefa binária a registrar na Fase 4** (ver T12).
+- **Caixas:**
+  - 9.555 caixas nos 6.012 positivos (1 caixa: 2.614; 2: 3.266; 3: 119; 4: 13).
+  - Todas dentro da imagem.
+  - **Área mediana = 6,2% da imagem.** Isso é relevante para interpretar o IoU do Grad-CAM, que é grosseiro (resolução 7×7 na última camada): IoU alto é difícil com alvos pequenos. Preferir também *pointing game* e energia dentro da caixa.
+- **Imagens:** 100% legíveis; todas 1024×1024, 8 bits, MONOCHROME2, modalidade CR, tórax. O formato é uniforme, ao contrário do Kermany (heterogêneo, com JPEG e algumas imagens RGB).
+- **Demografia:**
+  - Sexo: 15.166 M / 11.518 F.
+  - Idade: mediana 49 anos; 1.276 menores de 18.
+  - **5 idades impossíveis (148–155)**, erro de registro, tratadas como ausentes.
+  - Contraste de população com o Kermany (1–5 anos), o que caracteriza a mudança de domínio.
+- **⚠ Confundidor de incidência (achado importante):**
+
+  | Incidência | Imagens | % positivas |
+  |---|---|---|
+  | AP | 12.173 | **38,3%** |
+  | PA | 14.511 | **9,3%** |
+
+  - A incidência AP é feita em pacientes acamados ou mais graves, então "AP" carrega informação sobre o rótulo.
+  - Um modelo pode aprender a reconhecer a incidência (posição da escápula, magnificação cardíaca, marcadores) em vez da opacidade.
+  - **Relatar métricas estratificadas por AP/PA** na validação externa e no Grad-CAM. Excelente ponto para a discussão de *shortcut learning*.
+- **⚠ Sem identificador de paciente real:**
+  - `PatientID`, `StudyInstanceUID` e `SeriesInstanceUID` são **únicos por imagem** (anonimização do Kaggle).
+  - Shih et al. (p4) relatam ~12,3 mil pacientes para ~30 mil imagens (até 75 imagens/paciente).
+  - **Evidência concreta encontrada:** 2 pares com pHash idêntico. Um é a mesma imagem com 2 IDs (62 M AP); o outro é o mesmo paciente em exames de anos diferentes (58 → 59 M PA, com marcador "L" distinto).
+  - **Consequências:**
+    - Validação externa (treino Kermany → teste RSNA): **sem impacto**.
+    - Fine-tuning no RSNA: **possível vazamento** entre treino e teste, inevitável com os dados públicos. Declarar e tratar esse resultado como limite superior otimista.
+  - Mitigação possível (trabalho futuro): mapear as imagens para o NIH ChestX-ray14, que tem `Patient ID`, por correspondência de pixels. O custo é alto (~42 GB).
+- **0 duplicatas exatas de arquivo.**
+
 ---
 
 ## 3. Ameaças à validade (lista corrente)
@@ -160,6 +203,10 @@ Não há dataset com raio-X e dados clínicos do mesmo paciente. A ferramenta é
 | T8 | Duplicatas exatas dentro do teste (12 imagens) | Reportar métricas também no teste deduplicado |
 | T9 | Atalho RGB ↔ pneumonia no treino | Conversão para cinza obrigatória + teste; Grad-CAM para verificar atalhos (marcadores "R", textos) |
 | T10 | Kermany é pediátrico e de um único centro (Guangzhou) | Validação externa no RSNA (adultos, NIH) |
+| T11 | RSNA sem ID de paciente real (~2,2 imagens/paciente segundo Shih) | Sem impacto na validação externa; no fine-tuning no RSNA, declarar possível vazamento e interpretar como limite superior |
+| T12 | Confundidor de incidência no RSNA: AP 38,3% × PA 9,3% positivos | Métricas e Grad-CAM estratificados por AP/PA |
+| T13 | Mapeamento do "No Lung Opacity / Not Normal" do RSNA para a tarefa binária | Decisão explícita na Fase 4; análise com e sem essa classe |
+| T14 | Erros de registro no RSNA (idades 148–155) | Tratar como ausentes; usados só em análises descritivas |
 
 ---
 
@@ -194,7 +241,8 @@ Não há dataset com raio-X e dados clínicos do mesmo paciente. A ferramenta é
 ## 5. Figuras e tabelas planejadas
 - [ ] Fluxograma do sistema (dois módulos → serviço → interface)
 - [ ] Diagrama do protocolo de avaliação (split por paciente; CV aninhada)
-- [ ] Tabela 1: características dos datasets (n, prevalência, população, ausentes)
+- [ ] Tabela 1: características dos datasets (n, prevalência, população, ausentes, formato, ID de paciente disponível?)
+- [ ] Figura/tabela: prevalência por incidência AP/PA no RSNA (confundidor)
 - [ ] Tabela comparativa com a literatura, com coluna "protocolo de validação"
 - [ ] ROC/PR com IC; matrizes de confusão
 - [ ] SHAP beeswarm + waterfall; estabilidade do LIME
@@ -210,3 +258,4 @@ Não há dataset com raio-X e dados clínicos do mesmo paciente. A ferramenta é
 | 0.2 | 2026-11-10 | Sementes, caminhos, versionamento (§2.2) |
 | 0.3 | 2026-11-25 | Cleveland verificado contra a documentação oficial (§2.3) |
 | 0.4 | 2026-11-25 | Kermany: cópia duplicada no .zip, IDs de paciente, duplicatas, atalho RGB (§2.4; T6–T10) |
+| 0.5 | 2026-11-26 | RSNA: rótulos coerentes, confundidor AP/PA, sem ID de paciente real (§2.5; T11–T14) |

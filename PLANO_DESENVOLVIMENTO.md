@@ -11,7 +11,7 @@ Discente: Matheus Rodrigues Silva Maia · Orientador: Prof. Matheus Wanderley Ro
 
 | Fase | Descrição | Status |
 |---|---|---|
-| 0 | Ambiente, ingestão e integridade dos dados | 🟨 (0.1–0.3 ✅) |
+| 0 | Ambiente, ingestão e integridade dos dados | 🟨 (0.1–0.4 ✅) |
 | 1 | Dados tabulares: EDA, limpeza, pipelines anti-vazamento | ⬜ |
 | 2 | Modelagem tabular: CV aninhada, comparação, calibração | ⬜ |
 | 3 | XAI tabular: SHAP e LIME | ⬜ |
@@ -29,8 +29,8 @@ Discente: Matheus Rodrigues Silva Maia · Orientador: Prof. Matheus Wanderley Ro
 - [x] 0.1 Ambiente: uv + Python 3.12 + `pyproject.toml` + PyTorch CUDA (teste: `python scripts/check_env.py`) ✅
 - [x] 0.2 Estrutura de pastas, `git init`, `.gitignore`, `src/tcc_diag/{paths,seed}.py` (teste: `pytest tests/test_paths.py`) ✅
 - [x] 0.3 Ingestão Cleveland + sha256 (teste: `python scripts/ingest_heart.py` + `pytest tests/test_data_heart.py`) ✅
-- [ ] 0.4 Download Kermany + integridade (teste: `python scripts/ingest_kermany.py` + `pytest tests/test_data_kermany.py`) — 🟨 implementado e testado (10/10), aguardando gate
-- [ ] 0.5 Download RSNA + integridade (26.684 DICOMs; labels coerentes; metadados)
+- [x] 0.4 Download Kermany + integridade (teste: `python scripts/ingest_kermany.py` + `pytest tests/test_data_kermany.py`) ✅
+- [ ] 0.5 Download RSNA + integridade (teste: `python scripts/ingest_rsna.py` + `pytest tests/test_data_rsna.py`) — 🟨 implementado e testado (10/10), aguardando gate
 - [ ] 0.6 Benchmark GPU (img/s e batch máx. por arquitetura) → decisão local × Kaggle
 
 ### Fase 1 — Dados tabulares
@@ -140,6 +140,7 @@ Discente: Matheus Rodrigues Silva Maia · Orientador: Prof. Matheus Wanderley Ro
 | 2026-11-08 | Sem flip horizontal/vertical na augmentation | Inverteria lateralidade cardíaca; Shorten 2019 p7–9 |
 | 2026-11-10 | Commits e pushes feitos pelo discente (assistente apenas fornece os comandos) | Controle total do histórico do repositório |
 | 2026-11-25 | Grupos de paciente no split = ID do nome do arquivo ∪ duplicatas exatas (SHA-256) | Duplicata com IDs diferentes encontrada (NORMAL2-IM-0095/0096) |
+| 2026-11-26 | RSNA: só as imagens de treino rotuladas; métricas estratificadas por AP/PA | Teste da competição sem rótulo; AP 38,3% × PA 9,3% positivos |
 | 2026-11-25 | Conversão obrigatória para tons de cinza | 283 RGB, todas em train/PNEUMONIA: atalho potencial |
 | 2026-11-25 | Arquivo vivo `NOTAS_ARTIGO.md` atualizado a cada etapa | Discente produzirá artigo após o TCC |
 | 2026-11-10 | `explore/`, `data/` e pesos de modelos fora do git | PDFs com direitos autorais; dados regeneráveis por script; arquivos grandes |
@@ -152,6 +153,7 @@ Discente: Matheus Rodrigues Silva Maia · Orientador: Prof. Matheus Wanderley Ro
 | 0.1 Ambiente | 2026-11-10 | 28 libs OK; RTX 3050 4 GB; teste AMP OK |
 | 0.2 Estrutura/git | 2026-11-10 | 16 testes OK; repo GitHub criado (branch main) |
 | 0.3 Cleveland | 2026-11-25 | 15 testes OK; bate com heart-disease.names (seções 5, 7, 10) |
+| 0.4 Kermany | 2026-11-26 | 10 testes OK; 5.856 imagens; sem duplicatas treino↔teste; atalho RGB registrado |
 
 ## Pendências do discente
 - [x] Gerar token da API do Kaggle (necessário na etapa 0.4) — em `~/.kaggle/access_token`, testado

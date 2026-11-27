@@ -56,5 +56,25 @@
     },
     "images_sha256": "c6815eeed8c0bc401865e3146c3c9f257b7b261b00cd239f009af8660fc08d72",
     "ingested_at": "2026-11-25T23:31:02+00:00"
+  },
+  "rsna_pneumonia": {
+    "source": "Kaggle competition: rsna-pneumonia-detection-challenge (Shih et al., 2019)",
+    "url": "https://www.kaggle.com/c/rsna-pneumonia-detection-challenge",
+    "local_dir": "data/raw/rsna_pneumonia",
+    "zip_sha256": "133acacf95aa68c4d219124b17937f31cec073052096b9f9b122180df9d9af18",
+    "zip_bytes": 3932287530,
+    "n_train_dicoms": 26684,
+    "files": {
+      "stage_2_train_labels.csv": "bb40b7e956e9922a6b275ed4a158197568cf9ab618017d53db6159b1b624bb65",
+      "stage_2_detailed_class_info.csv": "c004c12dea2042cc23e3b848f65e8cb2e725799afaa90f13ee81f854bcc9614d"
+    },
+    "labels_sha256": "783e42085fb135651507aa248640eb875b2c969130d1579d21bc28608fe1c3b2",
+    "images_sha256": "0ebb97b732229531e6c1d214b704837dad0e02351b1c083918a12934ea2c67a6",
+    "class_counts": {
+      "No Lung Opacity / Not Normal": 11821,
+      "Normal": 8851,
+      "Lung Opacity": 6012
+    },
+    "ingested_at": "2026-11-27T01:23:24+00:00"
   }
 }
